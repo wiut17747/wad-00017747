@@ -1,11 +1,8 @@
-import { Component, Input, input, ViewChild } from "@angular/core";
-import { RouterLink, RouterModule, RouterOutlet } from "@angular/router";
-
-
+import { Component, Input } from "@angular/core";
+import { RouterLink, RouterOutlet } from "@angular/router";
 
 @Component({
   selector: "root-sidebar",
-  standalone: true,
   imports: [RouterLink],
   template: `
     <div class="bg-gray-200 lg:w-[255px] md:0px">
@@ -77,8 +74,7 @@ export class RootSidebar {
 
 @Component({
   selector: "root",
-  standalone: true,
-  imports: [RouterOutlet, RouterLink, RootSidebar],
+  imports: [RouterOutlet, RootSidebar],
   template: `
     <main class="flex flex-row w-full flex-shrink-0 basis-0 min-w-0">
       <root-sidebar></root-sidebar>
@@ -92,7 +88,6 @@ export class Root {}
 
 @Component({
   selector: "angular-root",
-  standalone: true,
   imports: [RouterOutlet],
   template: `<router-outlet></router-outlet>`,
 })
@@ -137,7 +132,6 @@ export class RecipeItem {
 
 @Component({
   selector: "index",
-  standalone: true,
   imports: [RouterLink, RecipeItem, RecipeList],
   template: `
     <section
