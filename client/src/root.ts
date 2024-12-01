@@ -1,4 +1,10 @@
-import { Component, Input } from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Injectable,
+  Input,
+} from "@angular/core";
 import { RouterLink, RouterOutlet } from "@angular/router";
 
 @Component({
@@ -28,7 +34,7 @@ import { RouterLink, RouterOutlet } from "@angular/router";
           <main class="pt-2 flex-grow">
             <div class="px-4">
               <button
-                (click)="openModal()"
+                (click)="dialogService.openDialog()"
                 class=" hover:bg-[#e1e1e1] hover:rounded-md flex items-center
                 gap-2 mb-6 w-full outline outline-1 outline-gray-300 rounded-md
                 shadow-sm p-1 pl-2 "
@@ -67,8 +73,28 @@ import { RouterLink, RouterOutlet } from "@angular/router";
   `,
 })
 export class RootSidebar {
-  openModal(): void {
-    console.log("modal");
+  constructor(public dialogService: DialogService) {}
+}
+
+@Injectable({ providedIn: "root" })
+export class DialogService {
+  private dialogRef: HTMLDialogElement | null = null;
+
+  setDialogRef(dialog: HTMLDialogElement) {
+    this.dialogRef = dialog;
+  }
+
+  openDialog() {
+    if (this.dialogRef) {
+      this.dialogRef.showModal();
+      console.log("open");
+    }
+  }
+  closeDialog() {
+    if (this.dialogRef) {
+      this.dialogRef.close();
+      console.log("close");
+    }
   }
 }
 
@@ -95,7 +121,7 @@ export class AngularRoot {}
 
 @Component({
   selector: "about",
-  standalone: true,
+
   template: `
     <section>
       <h1>about</h1>
@@ -105,7 +131,6 @@ export class AngularRoot {}
 export class About {}
 
 @Component({
-  standalone: true,
   selector: "recipe-list",
   template: `
     <ul>
@@ -117,7 +142,7 @@ export class RecipeList {}
 
 @Component({
   selector: "recipe-item",
-  standalone: true,
+
   template: `
     <li
       class="leading-8 border-0 border-solid border-b border-gray-300 flex items-center bg-white px-6"
@@ -170,6 +195,36 @@ export class RecipeItem {
         <recipe-item [text]="'5'"></recipe-item>
       </recipe-list>
     </section>
+
+    <section>
+      <dialog id="dialog">
+        <div id="dialog-inner">
+          <header class="flex justify-between pb-10">
+            <span>create a new recipe</span>
+            <button (click)="dialogService.closeDialog()">x close</button>
+          </header>
+          <main>
+            <p>some text</p>
+            <div class="flex justify-end">
+              <button type="submit" class="bg-green-400 p-1 rounded">
+                submit
+              </button>
+            </div>
+          </main>
+        </div>
+      </dialog>
+    </section>
   `,
 })
-export class Index {}
+export class Index implements AfterViewInit {
+  constructor(
+    public dialogService: DialogService,
+    private elementRef: ElementRef
+  ) {}
+
+  ngAfterViewInit() {
+    const dialogEl = this.elementRef.nativeElement.querySelector("#dialog");
+    console.log("Dialog in ngOnInit:", dialogEl);
+    this.dialogService.setDialogRef(dialogEl);
+  }
+}
