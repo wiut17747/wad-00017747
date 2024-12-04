@@ -5,6 +5,7 @@ import {
   ApplicationConfig,
   provideExperimentalZonelessChangeDetection,
 } from "@angular/core";
+import { provideHttpClient, withFetch } from "@angular/common/http";
 
 const routes: Routes = [
   {
@@ -27,6 +28,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideExperimentalZonelessChangeDetection(),
     provideRouter(routes),
+    provideHttpClient(withFetch()),
   ],
 };
 

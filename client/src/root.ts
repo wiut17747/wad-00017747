@@ -1,9 +1,11 @@
+import { HttpClient } from "@angular/common/http";
 import {
   AfterViewInit,
   Component,
   ElementRef,
   Injectable,
   Input,
+  OnInit,
 } from "@angular/core";
 import { RouterLink, RouterOutlet } from "@angular/router";
 
@@ -119,16 +121,30 @@ export class Root {}
 })
 export class AngularRoot {}
 
+@Injectable({ providedIn: "root" })
+export class ConfigService {
+  constructor(private http: HttpClient) {}
+}
 @Component({
   selector: "about",
-
   template: `
     <section>
       <h1>about</h1>
     </section>
   `,
 })
-export class About {}
+export class About {
+  constructor(private http: HttpClient) {
+    this.http.get("http://localhost:5002").subscribe({
+      next: (response) => {
+        console.log(response);
+      },
+      error: (err) => {
+        console.error("Error occurred:", err);
+      },
+    });
+  }
+}
 
 @Component({
   selector: "recipe-list",
@@ -219,8 +235,12 @@ export class RecipeItem {
 export class Index implements AfterViewInit {
   constructor(
     public dialogService: DialogService,
-    private elementRef: ElementRef
-  ) {}
+    private elementRef: ElementRef // private http: HttpClient
+  ) {
+    // this.http.get("https://localhost:5002").subscribe((response) => {
+    //   console.log(response);
+    // });
+  }
 
   ngAfterViewInit() {
     const dialogEl = this.elementRef.nativeElement.querySelector("#dialog");
