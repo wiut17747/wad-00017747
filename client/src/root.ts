@@ -23,14 +23,13 @@ import { RouterLink, RouterOutlet } from "@angular/router";
           >
             <button class="hover:bg-[#e1e1e1]">
               <div class="p-1">
-                <a routerLink="/about">
+                <a routerLink="/">
                   <div class="bg-green-600 text-white rounded-md ">
-                    <span class="px-1">O</span>
+                    <span class="px-1">17747</span>
                   </div>
                 </a>
               </div>
             </button>
-            <a routerLink="/">home</a>
           </header>
 
           <main class="pt-2 flex-grow">
@@ -173,10 +172,10 @@ export class RecipeItem {
 
 @Component({
   selector: "index",
-  imports: [RouterLink, RecipeItem, RecipeList],
+  imports: [RouterLink, ReactiveFormsModule],
   template: `
     <section
-      class="flex flex-col border-0  flex-shrink-0 basis-0 min-w-0 border-b border-solid border-gray-300"
+      class="flex pt-3 flex-col border-0  flex-shrink-0 basis-0 min-w-0 border-b border-solid border-gray-300"
     >
       <div class="bg-gray-100  rounded-md flex justify-between items-center">
         <div class=" flex px-4 h-9 justify-between items-center text-sm ">
@@ -189,57 +188,128 @@ export class RecipeItem {
             </a>
           </div>
         </div>
-        <form class="mr-4">
-          <input type="hidden" name="" value="" />
-          <button
-            disabled="{}"
-            type="submit"
-            className=" flex gap-1 items-center disabled:cursor-not-allowed disabled:text-gray-300 px-2 max-w-fit enabled:text-red-400 outline-1 outline enabled:outline-red-400 text-sm rounded-md "
-          >
-            delete
-          </button>
-        </form>
       </div>
     </section>
 
     <section class="border-0 border-b border-solid border-gray-300 ">
-      <recipe-list>
-        <recipe-item [text]="'hello from parent!!'"></recipe-item>
-        <recipe-item [text]="'2'"></recipe-item>
-        <recipe-item [text]="'3'"></recipe-item>
-        <recipe-item [text]="'4'"></recipe-item>
-        <recipe-item [text]="'5'"></recipe-item>
-      </recipe-list>
+      <ul>
+        @if (recipes.length > 0) {
+        <ul>
+          @for (recipe of recipes; track recipe.id) {
+
+          <a [routerLink]="['/recipe', recipe.id]">
+            <li
+              class="rounded leading-8 border-0 border-solid border-b border-gray-300 flex items-center bg-white px-6"
+            >
+              <span>{{ recipe.name }}</span>
+            </li>
+          </a>
+
+          }
+        </ul>
+        } @else {
+        <p>No recipes found</p>
+        }
+      </ul>
     </section>
 
     <section>
       <dialog id="dialog">
         <div id="dialog-inner">
-          <header class="flex justify-between pb-10">
-            <span>create a new recipe</span>
-            <button (click)="dialogService.closeDialog()">x close</button>
+          <header class="flex justify-between pb-3">
+            <span>Create a new recipe</span>
+            <button (click)="dialogService.closeDialog()" class="px-2">
+              Close
+            </button>
           </header>
           <main>
-            <p>some text</p>
-            <div class="flex justify-end">
-              <button type="submit" class="bg-green-400 p-1 rounded">
-                submit
-              </button>
-            </div>
+            <form (submit)="uploadData($event)">
+              <div class="flex flex-col gap-2">
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="name"
+                  [formControl]="name"
+                  required
+                />
+
+                <input
+                  type="text"
+                  name="description"
+                  placeholder="description"
+                  [formControl]="description"
+                  required
+                />
+              </div>
+
+              <div class="flex justify-end">
+                <button
+                  type="submit"
+                  class="bg-green-400 p-1 rounded py-1 px-2"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
           </main>
         </div>
       </dialog>
     </section>
   `,
 })
-export class Index implements AfterViewInit {
+export class Index implements OnInit, AfterViewInit {
+  name = new FormControl("");
+  description = new FormControl("");
+
+  recipes: any[] = [];
+
   constructor(
     public dialogService: DialogService,
-    private elementRef: ElementRef // private http: HttpClient
-  ) {
-    // this.http.get("https://localhost:5002").subscribe((response) => {
-    //   console.log(response);
-    // });
+    private elementRef: ElementRef,
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    this.getRecipes();
+    console.log(this.recipes);
+  }
+
+  getRecipes(): void {
+    this.http.get<any[]>("http://localhost:5002/recipes").subscribe(
+      (res) => {
+        this.recipes = res;
+        this.cdr.detectChanges();
+        console.log("Recipes fetched:", this.recipes);
+        console.log("Recipes length:", this.recipes.length);
+        console.log("Recipes fetched successfully:", res);
+      },
+      (err) => {
+        console.error("Error fetching recipes:", err);
+      }
+    );
+  }
+
+  uploadData(event: Event): void {
+    event.preventDefault();
+
+    const formData = new FormData();
+    formData.append("name", this.name.value || "");
+    formData.append("description", this.description.value || "");
+
+    this.http.post("http://localhost:5002/recipes", formData).subscribe(
+      (response) => {
+        console.log("Upload successful:", response);
+        this.name.setValue("");
+        this.description.setValue("");
+
+        this.getRecipes();
+        this.dialogService.closeDialog();
+      },
+      (err) => {
+        console.error("Error during upload:", err);
+      }
+    );
   }
 
   ngAfterViewInit() {

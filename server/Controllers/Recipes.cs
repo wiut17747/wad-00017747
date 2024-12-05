@@ -1,13 +1,30 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using server.Data;
+using server.Models;
 
 namespace server.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class TestContoller : ControllerBase
+public class RecipesController : ControllerBase
 {
-    [HttpGet("hello")]
-    public IActionResult GetHello()
+    private readonly AppDbContext _context;
+
+    public RecipesController(AppDbContext context)
+    {
+        _context = context;
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<Recipe>> CreateRecipe([FromForm] Recipe recipe)
+    {
+        Console.WriteLine($"Name: {recipe.Name}, Description: {recipe.Description}");
+        _context.Recipes.Add(recipe);
+        await _context.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetRecipe), new { id = recipe.Id }, recipe);
+    }
+
     {
         return Ok("Hello");
     }
