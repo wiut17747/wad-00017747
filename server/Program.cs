@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using server.Data;
+
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
     ApplicationName = typeof(Program).Assembly.FullName,
@@ -8,6 +11,10 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
 
 builder.Services.AddCors(options =>
 {
@@ -30,6 +37,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAngularApp");
 app.UseHttpsRedirection();
 app.MapControllers();
+app.UseRouting();
 
 app.MapGet("/", () => Results.Json(new { message = "yo server" }));
 
