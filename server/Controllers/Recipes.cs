@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using server.Data;
 using server.Models;
+using server.Repositories;
 
 namespace server.Controllers;
 
@@ -9,45 +8,38 @@ namespace server.Controllers;
 [Route("[controller]")]
 public class RecipesController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly IRecipeRepository _recipeRepository;
 
-    public RecipesController(AppDbContext context)
+    public RecipesController(IRecipeRepository recipeRepository)
     {
-        _context = context;
+        _recipeRepository = recipeRepository;
     }
 
     [HttpPost]
     public async Task<ActionResult<Recipe>> CreateRecipe([FromForm] Recipe recipe)
     {
         Console.WriteLine($"Name: {recipe.Name}, Description: {recipe.Description}");
-        _context.Recipes.Add(recipe);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetRecipe), new { id = recipe.Id }, recipe);
+        var createdRecipe = await _recipeRepository.CreateRecipe(recipe);
+        return CreatedAtAction(nameof(GetRecipe), new { id = createdRecipe.Id }, createdRecipe);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Recipe>> GetRecipe(int id)
     {
-        var recipe = await _context.Recipes.FindAsync(id);
-        if (recipe == null) return NotFound();
-
-
-        return recipe;
+        var recipe = await _recipeRepository.GetRecipe(id);
+        return recipe == null ? NotFound() : Ok(recipe);
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipes()
     {
-        return await _context.Recipes.ToListAsync();
+        return Ok(await _recipeRepository.GetRecipes());
     }
 
     [HttpDelete("{id}")]
     public async Task<ActionResult<Recipe>> DeleteRecipe(int id)
     {
-        var recipe = await _context.Recipes.FindAsync(id);
-        if (recipe == null) return NotFound();
-        _context.Recipes.Remove(recipe);
-        await _context.SaveChangesAsync();
-        return NoContent();
+        var result = await _recipeRepository.DeleteRecipe(id);
+        return result ? NoContent() : NotFound();
     }
 }

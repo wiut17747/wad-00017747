@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using server.Data;
+using server.Repositories;
 
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
@@ -10,10 +11,11 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 });
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "recipe api", Version = "v1" });
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Recipe API, 00017747", Version = "v1" });
 });
 
 builder.Services.AddDbContext<AppDbContext>(options =>
