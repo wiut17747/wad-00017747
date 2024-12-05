@@ -69,7 +69,7 @@ import { Observable } from "rxjs";
           </main>
           <footer class="px-4 pb-5">
             <a
-              href=""
+              href="https://github.com/wiut17747/wad-00017747"
               class="p-1 pl-2 flex gap-2 items-center hover:bg-gray-200 rounded"
             >
               🔗 Link to Github
