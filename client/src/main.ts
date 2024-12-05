@@ -1,5 +1,5 @@
 import { bootstrapApplication } from "@angular/platform-browser";
-import { About, AngularRoot, Index, Root } from "./root";
+import { About, AngularRoot, Index, RecipeDetail, Root } from "./root";
 import { provideRouter, Routes } from "@angular/router";
 import {
   ApplicationConfig,
@@ -19,6 +19,10 @@ const routes: Routes = [
       {
         path: "about",
         component: About,
+      },
+      {
+        path: "recipe/:id",
+        component: RecipeDetail,
       },
     ],
   },

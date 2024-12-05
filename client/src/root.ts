@@ -1,13 +1,20 @@
 import { HttpClient } from "@angular/common/http";
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   Injectable,
-  Input,
   OnInit,
 } from "@angular/core";
-import { RouterLink, RouterOutlet } from "@angular/router";
+import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import {
+  ActivatedRoute,
+  Router,
+  RouterLink,
+  RouterOutlet,
+} from "@angular/router";
+import { Observable } from "rxjs";
 
 @Component({
   selector: "root-sidebar",
@@ -146,30 +153,66 @@ export class About {
 }
 
 @Component({
-  selector: "recipe-list",
+  selector: "recipe-detail",
   template: `
-    <ul>
-      <ng-content />
-    </ul>
+    <section class=" pl-4 bg-white pb-3 mt-3 pt-1 rounded">
+      @if (recipe) {
+      <h1 class="pb-3 text-3xl">{{ recipe.name }}</h1>
+      <p>{{ recipe.description }}</p>
+      } @else {
+      <p>Loading recipe...</p>
+      }
+
+      <button
+        (click)="deleteRecipe()"
+        class="mt-10 outline outline-1 px-2 py-1 rounded outline-red-500 text-red-500"
+      >
+        delete
+      </button>
+    </section>
   `,
 })
-export class RecipeList {}
+export class RecipeDetail implements OnInit {
+  recipe: any;
+  constructor(
+    private route: ActivatedRoute,
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef,
+    private router: Router
+  ) {}
 
-@Component({
-  selector: "recipe-item",
+  ngOnInit(): void {
+    const recipeId = this.route.snapshot.paramMap.get("id");
+    if (recipeId) {
+      this.http.get(`http://localhost:5002/recipes/${recipeId}`).subscribe(
+        (res) => {
+          this.recipe = res;
+          this.cdr.detectChanges();
+          console.log(this.recipe);
+        },
+        (err) => {
+          console.error("error fethcing recipe", err);
+        }
+      );
+    }
+  }
 
-  template: `
-    <li
-      class="leading-8 border-0 border-solid border-b border-gray-300 flex items-center bg-white px-6"
-    >
-      {{ text }}
-    </li>
-  `,
-})
-export class RecipeItem {
-  @Input() text?: string;
+  deleteRecipe(): void {
+    const recipeId = this.route.snapshot.paramMap.get("id");
+    console.log(recipeId);
+    if (recipeId) {
+      this.http.delete(`http://localhost:5002/recipes/${recipeId}`).subscribe(
+        () => {
+          console.log("recipe deleted successfully");
+          this.router.navigate(["/"]);
+        },
+        (err: any) => {
+          console.error("error deleting recipe", err);
+        }
+      );
+    }
+  }
 }
-
 @Component({
   selector: "index",
   imports: [RouterLink, ReactiveFormsModule],
