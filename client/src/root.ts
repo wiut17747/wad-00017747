@@ -47,7 +47,7 @@ import { Observable } from "rxjs";
                 gap-2 mb-6 w-full outline outline-1 outline-gray-300 rounded-md
                 shadow-sm p-1 pl-2 "
               >
-                New recipe
+                🆕 New recipe
               </button>
             </div>
             <ul class="flex flex-col gap-1 px-4 mb-5">
@@ -61,7 +61,7 @@ import { Observable } from "rxjs";
                   <input
                     name="search"
                     class="w-full flex gap-2 bg-transparent leading-4  outline-none text-base"
-                    placeholder="Search"
+                    placeholder="🔎 Search"
                   />
                 </form>
               </li>
@@ -72,7 +72,7 @@ import { Observable } from "rxjs";
               href=""
               class="p-1 pl-2 flex gap-2 items-center hover:bg-gray-200 rounded"
             >
-              Link to Github
+              🔗 Link to Github
             </a>
           </footer>
         </nav>
