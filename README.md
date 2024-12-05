@@ -10,7 +10,7 @@ Calculation: 17747/20 = 7 remainder, 7 = Recipe book from the list
 <img src="client/public/preview-create.png">
 <img src="client/public/preview-delete.png">
 
-
+https://github.com/user-attachments/assets/a9cc8e7e-a222-4773-8c37-8247c246c756
 
 
 
