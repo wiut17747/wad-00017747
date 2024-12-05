@@ -32,7 +32,7 @@ import { Observable } from "rxjs";
               <div class="p-1">
                 <a routerLink="/">
                   <div class="bg-green-600 text-white rounded-md ">
-                    <span class="px-1">17747</span>
+                    <span class="px-1">00017747</span>
                   </div>
                 </a>
               </div>
@@ -271,7 +271,7 @@ export class RecipeDetail implements OnInit {
                 <input
                   type="text"
                   name="name"
-                  placeholder="name"
+                  placeholder="*name"
                   [formControl]="name"
                   required
                 />
@@ -279,7 +279,7 @@ export class RecipeDetail implements OnInit {
                 <input
                   type="text"
                   name="description"
-                  placeholder="description"
+                  placeholder="*description"
                   [formControl]="description"
                   required
                 />
